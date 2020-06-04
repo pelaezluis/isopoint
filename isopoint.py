@@ -80,7 +80,6 @@ def pks_peptide(peptide_chain):
 
 	largo_cadena = len(peptide_chain)
 	pk = []
-	pks = {}
 	ion = []
 	ionizado = []
 
@@ -126,7 +125,6 @@ def pks_peptide(peptide_chain):
 				ion.append(aminoacidos[no_terminales][4])
 				ionizado.append(aminoacidos[no_terminales][0])
 
-	tamaño_cuadro = len(pk)
 
 	print("\n***************** INFORMACION DE LA SECUENCIA ******************\n")
 	print(f"Secuencia de aminoácidos --> {peptide_chain}\n")
@@ -137,45 +135,16 @@ def pks_peptide(peptide_chain):
 		c += 1
 	#print(ion)
 	#print(pk)
-	#print("tamano ", tamaño_cuadro)
 	print("\n****************************************************************")
 
 
 	pk_ordenado = sorted(pk)
 
 	intervalos_pk, cantidad_intervalos = intervalos(pk_ordenado)
-	pks["pks"] = intervalos_pk
-
 
 	# creación de tabla que indica la ionización, es decir,
 	# si es positivo, neutro o negativo en un intervalo
-	for intervalo in range(cantidad_intervalos):
-		relleno = [0 for espacio in range(cantidad_intervalos)]
-		if intervalo == tamaño_cuadro:
-			break
-		if ion[intervalo] == "basic":
-			for i in range(tamaño_cuadro + 1):
-				inferior, superior = intervalos_pk[i]
-				if pk[intervalo] == superior:
-					relleno[i] = 1
-				elif pk[intervalo] == inferior:
-					relleno[i] = 0
-				elif pk[intervalo] not in intervalos_pk[i]:
-					if pk[intervalo] > superior:
-						relleno[i] = 1
-			pks[ionizado[intervalo]] = relleno
-
-		elif ion[intervalo] == "acid":
-			for i in range(tamaño_cuadro + 1):
-				inferior, superior = intervalos_pk[i]
-				if pk[intervalo] == superior:
-					relleno[i] = 0
-				elif pk[intervalo] == inferior:
-					relleno[i] = -1
-				elif pk[intervalo] not in intervalos_pk[i]:
-					if pk[intervalo] < superior:
-						relleno[i] = -1
-			pks[ionizado[intervalo]] = relleno
+	pks = tabla_intervalos(cantidad_intervalos, intervalos_pk, ion, pk, ionizado)
 
 	# Detecta el punto del zwitterion
 	pk_intervalo = zwitterion(pks, cantidad_intervalos)
@@ -202,6 +171,42 @@ def intervalos(pk_ordenado):
 			intervalos.append([pk_ordenado[p-1], pk_ordenado[p]])
 	return (intervalos, n_intervalos)
 
+
+def tabla_intervalos(cantidad_intervalos, intervalos_pk, ion, pk, ionizado):
+	# Crea la tabla de intercalos ordenada de menor a mayor y agrega las
+	# ionizaciones que se presenta en cada uno
+	tamano_cuadro = len(pk)
+	pks = {}
+	pks["pks"] = intervalos_pk
+	for intervalo in range(cantidad_intervalos):
+		relleno = [0 for espacio in range(cantidad_intervalos)]
+		if intervalo == tamano_cuadro:
+			break
+		if ion[intervalo] == "basic":
+			for i in range(tamano_cuadro + 1):
+				inferior, superior = intervalos_pk[i]
+				if pk[intervalo] == superior:
+					relleno[i] = 1
+				elif pk[intervalo] == inferior:
+					relleno[i] = 0
+				elif pk[intervalo] not in intervalos_pk[i]:
+					if pk[intervalo] > superior:
+						relleno[i] = 1
+			pks[ionizado[intervalo]] = relleno
+
+		elif ion[intervalo] == "acid":
+			for i in range(tamano_cuadro + 1):
+				inferior, superior = intervalos_pk[i]
+				if pk[intervalo] == superior:
+					relleno[i] = 0
+				elif pk[intervalo] == inferior:
+					relleno[i] = -1
+				elif pk[intervalo] not in intervalos_pk[i]:
+					if pk[intervalo] < superior:
+						relleno[i] = -1
+			pks[ionizado[intervalo]] = relleno
+
+	return pks
 
 def zwitterion(pks, cantidad_intervalos):
 	# Muestra el intervalo en el cual la carga es igual a 0
