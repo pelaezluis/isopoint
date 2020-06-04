@@ -43,14 +43,14 @@ def ayuda(h):
 
 
 def presentacion():
-	print("****************************************************************")
+	print("\n****************************************************************")
 	print("* Isopoint es una aplicación creada con el fin de facilitar el *\n"
 		  "* cálculo del punto isoelétrico de péptidos y proteínas.       *")
 	print("****************************************************************\n")
 
 
 def ingreso_cadena():
-	cadena = input("Ingresa la secuencia de aminoácidos:\n")
+	cadena = input("Ingresa la secuencia de aminoácidos:\n\n")
 	cadena = cadena.upper()
 	verificar_peptido(cadena)
 	return cadena
@@ -89,7 +89,7 @@ def pks_peptide(peptide_chain):
 			amino_terminal = peptide_chain[aa]
 			pk.append(aminoacidos[amino_terminal][2])
 			ion.append("basic")
-			ionizado.append(aminoacidos[amino_terminal][0])
+			ionizado.append(aminoacidos[amino_terminal][0] + "_at")
 			
 			# Agregar cadena lateral del primer aa en caso de presentar
 			if len(aminoacidos[amino_terminal]) == 5:
@@ -108,9 +108,6 @@ def pks_peptide(peptide_chain):
 
 		elif aa == largo_cadena - 1:
 			carboxi_terminal = peptide_chain[aa]
-			pk.append(aminoacidos[carboxi_terminal][1])
-			ion.append("acid")
-			ionizado.append(aminoacidos[carboxi_terminal][0])
 
 			# Agregar cadena lateral del último aa en caso de presentar
 			if len(aminoacidos[carboxi_terminal]) == 5:
@@ -118,12 +115,16 @@ def pks_peptide(peptide_chain):
 				ion.append(aminoacidos[carboxi_terminal][4])
 				ionizado.append(aminoacidos[carboxi_terminal][0] + "_r")
 
+			pk.append(aminoacidos[carboxi_terminal][1])
+			ion.append("acid")
+			ionizado.append(aminoacidos[carboxi_terminal][0] + "_ct")
+
 		elif aa > 0 and aa < largo_cadena:
 			no_terminales = peptide_chain[aa]
 			if len(aminoacidos[no_terminales]) == 5:
 				pk.append(aminoacidos[no_terminales][3])
 				ion.append(aminoacidos[no_terminales][4])
-				ionizado.append(aminoacidos[no_terminales][0])
+				ionizado.append(aminoacidos[no_terminales][0] + "_r")
 
 
 	print("\n***************** INFORMACION DE LA SECUENCIA ******************\n")
@@ -150,7 +151,7 @@ def pks_peptide(peptide_chain):
 	# Detecta el punto del zwitterion
 	pk_intervalo = zwitterion(pks, cantidad_intervalos)
 	
-	
+
 	# calcular punto isoelectrico
 	punto_iso = punto_isoelectrico(pk_intervalo)
 	return(round(punto_iso, 2))
