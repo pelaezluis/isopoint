@@ -146,16 +146,15 @@ def pks_peptide(peptide_chain):
 	# si es positivo, neutro o negativo en un intervalo
 	pks = tabla_intervalos(cantidad_intervalos, intervalos_pk, ion, pk, ionizado)
 
+
 	# Detecta el punto del zwitterion
 	pk_intervalo = zwitterion(pks, cantidad_intervalos)
+	
 	
 	# calcular punto isoelectrico
 	punto_iso = punto_isoelectrico(pk_intervalo)
 	return(round(punto_iso, 2))
 
-
-def aminoacido(aminoacido):
-	verificar_peptido(aminoacido)
 
 
 def intervalos(pk_ordenado):
@@ -233,7 +232,7 @@ def punto_isoelectrico(intervalo):
 #cadena = "MADRE" 	#3.95
 #cadena = "KED" 	#3.95
 #cadena = "AVDKQW" 	#6.89
-#cadena = "DFRKTGH" #10.06
+#cadena = "DFRKTGH"	#10.06
 #cadena = "MA" 		#5.78
 #cadena = "RCAEIY"	#6.21
 
