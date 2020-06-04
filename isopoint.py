@@ -43,10 +43,10 @@ def ayuda(h):
 
 
 def presentacion():
-	print("************************************************************")
-	print("Isopoint es una aplicación creada con el fin de facilitar el\n"
-		  "cálculo del punto isoelétrico de péptidos y proteínas.")
-	print("************************************************************\n")
+	print("****************************************************************")
+	print("* Isopoint es una aplicación creada con el fin de facilitar el *\n"
+		  "* cálculo del punto isoelétrico de péptidos y proteínas.       *")
+	print("****************************************************************\n")
 
 
 def ingreso_cadena():
@@ -124,7 +124,7 @@ def pks_peptide(peptide_chain):
 
 	tamaño_cuadro = len(pk)
 
-	print("\n********** INFORMACION DE LA SECUENCIA **********\n")
+	print("\n***************** INFORMACION DE LA SECUENCIA ******************\n")
 	print(f"Secuencia de aminoácidos --> {peptide_chain}\n")
 	c = 1
 	print("Aminoácidos con cargas...\n")
@@ -134,7 +134,7 @@ def pks_peptide(peptide_chain):
 	#print(ion)
 	#print(pk)
 	#print("tamano ", tamaño_cuadro)
-	print("\n*************************************************")
+	print("\n****************************************************************")
 	#Funciona------------------------------------------------------------------
 
 	pk_ordenado = sorted(pk)
