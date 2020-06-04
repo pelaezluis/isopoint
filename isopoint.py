@@ -9,8 +9,8 @@ from sys import exit, argv
 #system("clear")
 
 
-# acid indica que se ioniza después de su pk
-# basic indica que se ioniza antes de su pk
+# acid indica que se ioniza después de su pk y la carga es negativa
+# basic indica que se ioniza antes de su pk y la carga es positiva
 aminoacidos ={
 	"G": ["GLY", 2.34, 9.6],
 	"A": ["ALA", 2.34, 9.69],
@@ -83,20 +83,23 @@ def pks_peptide(peptide_chain):
 	pks = {}
 	ion = []
 	ionizado = []
-	#Funciona------------------------------------------------------------------
+
+
 	for aa in range(largo_cadena):
 		if aa == 0:
 			amino_terminal = peptide_chain[aa]
 			pk.append(aminoacidos[amino_terminal][2])
 			ion.append("basic")
 			ionizado.append(aminoacidos[amino_terminal][0])
-			# Agregar cadena lateral del primer aa
+			
+			# Agregar cadena lateral del primer aa en caso de presentar
 			if len(aminoacidos[amino_terminal]) == 5:
 				pk.append(aminoacidos[amino_terminal][3])
 				ion.append(aminoacidos[amino_terminal][4])
 				ionizado.append(aminoacidos[amino_terminal][0] + "_r")
 			
-			# Para los casos con un solo aminoácido
+			# Para los casos con un solo aminoácido se toman solo los
+			# valores de ese aminoácido
 			if largo_cadena == 1:
 				carboxi_terminal = peptide_chain[aa]
 				pk.append(aminoacidos[carboxi_terminal][1])
@@ -109,7 +112,8 @@ def pks_peptide(peptide_chain):
 			pk.append(aminoacidos[carboxi_terminal][1])
 			ion.append("acid")
 			ionizado.append(aminoacidos[carboxi_terminal][0])
-			# Agregar cadena lateral del último aa
+
+			# Agregar cadena lateral del último aa en caso de presentar
 			if len(aminoacidos[carboxi_terminal]) == 5:
 				pk.append(aminoacidos[carboxi_terminal][3])
 				ion.append(aminoacidos[carboxi_terminal][4])
@@ -135,7 +139,7 @@ def pks_peptide(peptide_chain):
 	#print(pk)
 	#print("tamano ", tamaño_cuadro)
 	print("\n****************************************************************")
-	#Funciona------------------------------------------------------------------
+
 
 	pk_ordenado = sorted(pk)
 
@@ -143,7 +147,8 @@ def pks_peptide(peptide_chain):
 	pks["pks"] = intervalos_pk
 
 
-	# creación de tabla que indica la ionización
+	# creación de tabla que indica la ionización, es decir,
+	# si es positivo, neutro o negativo en un intervalo
 	for intervalo in range(cantidad_intervalos):
 		relleno = [0 for espacio in range(cantidad_intervalos)]
 		if intervalo == tamaño_cuadro:
@@ -151,7 +156,6 @@ def pks_peptide(peptide_chain):
 		if ion[intervalo] == "basic":
 			for i in range(tamaño_cuadro + 1):
 				inferior, superior = intervalos_pk[i]
-				#print("verificando si", pk[intervalo], " está en -->", inferior, superior)
 				if pk[intervalo] == superior:
 					relleno[i] = 1
 				elif pk[intervalo] == inferior:
@@ -164,7 +168,6 @@ def pks_peptide(peptide_chain):
 		elif ion[intervalo] == "acid":
 			for i in range(tamaño_cuadro + 1):
 				inferior, superior = intervalos_pk[i]
-				#print("verificando si", pk[intervalo], " está en -->", inferior, superior)
 				if pk[intervalo] == superior:
 					relleno[i] = 0
 				elif pk[intervalo] == inferior:
@@ -175,18 +178,10 @@ def pks_peptide(peptide_chain):
 			pks[ionizado[intervalo]] = relleno
 
 	# Detecta el punto del zwitterion
-	for i in range(cantidad_intervalos):
-		zwitterion = 0
-		for j in pks:
-			if j == "pks":
-				pass
-			else:
-				zwitterion += pks[j][i]
-		if zwitterion == 0:
-			pk_intervalo = pks["pks"][i]
+	pk_intervalo = zwitterion(pks, cantidad_intervalos)
+	
 	# calcular punto isoelectrico
-	#print(pks)
-	punto_iso = sum(pk_intervalo) / 2
+	punto_iso = punto_isoelectrico(pk_intervalo)
 	return(round(punto_iso, 2))
 
 
@@ -195,6 +190,7 @@ def aminoacido(aminoacido):
 
 
 def intervalos(pk_ordenado):
+	# Crea los diferentes intervalos para encontrar el zwitterion
 	n_intervalos = len(pk_ordenado) + 1
 	intervalos = []
 	for p in range(n_intervalos):
@@ -205,6 +201,26 @@ def intervalos(pk_ordenado):
 		else:
 			intervalos.append([pk_ordenado[p-1], pk_ordenado[p]])
 	return (intervalos, n_intervalos)
+
+
+def zwitterion(pks, cantidad_intervalos):
+	# Muestra el intervalo en el cual la carga es igual a 0
+	for i in range(cantidad_intervalos):
+		zwitterion = 0
+		for j in pks:
+			if j == "pks":
+				pass
+			else:
+				zwitterion += pks[j][i]
+		if zwitterion == 0:
+			pk_intervalo = pks["pks"][i]
+	return pk_intervalo
+
+
+def punto_isoelectrico(intervalo):
+	# Calcula el pI, este es el promedio de los dos valores
+	return sum(intervalo) / 2
+
 
 
 # Pruebas
