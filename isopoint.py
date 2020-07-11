@@ -45,7 +45,8 @@ def ayuda(h):
 def presentacion():
 	print("\n****************************************************************")
 	print("* Isopoint es una aplicación creada con el fin de facilitar el *\n"
-		  "* cálculo del punto isoelétrico de péptidos y proteínas.       *")
+		  "* cálculo del punto isoelétrico de péptidos y proteínas.       *",
+		  "\n* Creado por: Luis Peláez                                      *")
 	print("****************************************************************\n")
 
 
